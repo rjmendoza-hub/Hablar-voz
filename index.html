@@ -1,0 +1,2986 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Juego de Palabras</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            overflow: hidden;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+
+                radial-gradient(
+                    circle at 15% 20%,
+                    #ffd6e7 0%,
+                    transparent 28%
+                ),
+
+                radial-gradient(
+                    circle at 85% 20%,
+                    #d6e8ff 0%,
+                    transparent 30%
+                ),
+
+                radial-gradient(
+                    circle at 50% 100%,
+                    #d9f7e8 0%,
+                    transparent 35%
+                ),
+
+                #f7f8ff;
+
+            color: #555;
+        }
+
+
+        .game {
+
+            width: 100vw;
+
+            height: 100vh;
+
+            position: relative;
+
+            overflow: hidden;
+        }
+
+
+        .top {
+
+            position: absolute;
+
+            top: 18px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            width: 92%;
+
+            max-width: 1100px;
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            z-index: 30;
+        }
+
+
+        .title {
+
+            font-size: 27px;
+
+            font-weight: 700;
+        }
+
+
+        .stats {
+
+            display: flex;
+
+            gap: 10px;
+
+            align-items: center;
+        }
+
+
+        .stat {
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    .78
+                );
+
+            backdrop-filter:
+                blur(10px);
+
+            padding:
+                10px 17px;
+
+            border-radius: 22px;
+
+            box-shadow:
+                0 6px 20px
+                rgba(0,0,0,.08);
+
+            font-weight: bold;
+        }
+
+
+        /* =====================================
+           CONTROLES
+           ===================================== */
+
+        .controls {
+
+            position: absolute;
+
+            top: 70px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            display: flex;
+
+            gap: 9px;
+
+            z-index: 30;
+
+            flex-wrap: wrap;
+
+            justify-content: center;
+        }
+
+
+        .control {
+
+            border: none;
+
+            outline: none;
+
+            padding:
+                9px 15px;
+
+            border-radius: 20px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    .85
+                );
+
+            box-shadow:
+                0 5px 18px
+                rgba(0,0,0,.07);
+
+            color: #555;
+
+            cursor: pointer;
+
+            font-size: 14px;
+        }
+
+
+        .control:hover {
+
+            background: white;
+        }
+
+
+        /* =====================================
+           VIDAS
+           ===================================== */
+
+        .lives {
+
+            position: absolute;
+
+            top: 115px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            z-index: 30;
+
+            font-size: 23px;
+
+            letter-spacing: 5px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    .55
+                );
+
+            padding:
+                7px 18px;
+
+            border-radius: 20px;
+        }
+
+
+        /* =====================================
+           SPEECH
+           ===================================== */
+
+        .speech-area {
+
+            position: absolute;
+
+            top: 155px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            z-index: 20;
+            color:transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+
+        .speech {
+
+            min-width: 280px;
+
+            min-height: 72px;
+
+            padding:
+                17px 35px;
+
+            background: white;
+
+            border-radius: 30px;
+
+            box-shadow:
+                0 10px 35px
+                rgba(0,0,0,.12);
+
+            font-size: 28px;
+
+            font-weight: bold;
+
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: transform .25s ease, opacity .25s ease, box-shadow .25s ease;
+        }
+
+
+        .speech::after {
+
+            content: "";
+
+            position: absolute;
+
+            bottom: -14px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            border-left:
+                14px solid transparent;
+
+            border-right:
+                14px solid transparent;
+
+            border-top:
+                14px solid white;
+        }
+
+
+        .speaker {
+
+            width: 52px;
+
+            height: 52px;
+
+            border: none;
+
+            border-radius: 50%;
+
+            background: white;
+
+            box-shadow:
+                0 6px 20px
+                rgba(0,0,0,.1);
+
+            cursor: pointer;
+
+            font-size: 21px;
+
+            transition: .2s;
+        }
+
+
+        .speaker:hover {
+
+            transform:
+                scale(1.12);
+        }
+
+
+        /* =====================================
+           TIMER
+           ===================================== */
+
+        .timer-area {
+
+            position: absolute;
+
+            top: 305px;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+            z-index: 20;
+
+            text-align: center;
+        }
+
+
+        .timer {
+
+            font-size: 28px;
+
+            font-weight: bold;
+        }
+
+
+        .timer-bar {
+
+            width: 270px;
+
+            height: 8px;
+
+            margin-top: 8px;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    .7
+                );
+
+            border-radius: 20px;
+
+            overflow: hidden;
+        }
+
+
+        .timer-progress {
+
+            height: 100%;
+
+            width: 100%;
+
+            background: #b9e7d3;
+
+            transition:
+                width 1s linear;
+        }
+
+
+        /* =====================================
+           BURBUJAS
+           ===================================== */
+
+        #bubbles {
+
+            position: absolute;
+
+            inset: 0;
+
+            z-index: 5;
+        }
+
+
+        .bubble {
+
+            position: absolute;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            min-width: 120px;
+
+            min-height: 70px;
+
+            padding:
+                15px 25px;
+
+            border-radius: 60px;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            color: #555;
+
+            cursor: pointer;
+
+            user-select: none;
+
+            box-shadow:
+                0 10px 25px
+                rgba(0,0,0,.08);
+
+            animation:
+                floating
+                4s ease-in-out
+                infinite;
+
+            transition:
+                transform .25s,
+                opacity .25s;
+        }
+
+
+        .bubble:hover {
+
+            transform:
+                scale(1.12);
+        }
+
+
+        @keyframes floating {
+
+            0% {
+                margin-top: 0;
+            }
+
+            50% {
+                margin-top: -18px;
+            }
+
+            100% {
+                margin-top: 0;
+            }
+        }
+
+
+        .pastel1 {
+            background: #ffd6e7;
+        }
+
+        .pastel2 {
+            background: #d6e8ff;
+        }
+
+        .pastel3 {
+            background: #d9f7e8;
+        }
+
+        .pastel4 {
+            background: #fff0c9;
+        }
+
+        .pastel5 {
+            background: #e7d9ff;
+        }
+
+        .pastel6 {
+            background: #ffd9c9;
+        }
+
+
+        /* =====================================
+           PERSONAJES
+           ===================================== */
+
+        .character {
+
+            position: absolute;
+
+            width: 120px;
+
+            height: 120px;
+
+            object-fit: contain;
+
+            z-index: 4;
+
+            pointer-events: none;
+
+            animation:
+                characterFloat
+                4s ease-in-out
+                infinite;
+        }
+
+
+        .character.left {
+
+            left: 20px;
+
+            bottom: 20px;
+        }
+
+
+        .character.right {
+
+            right: 20px;
+
+            bottom: 20px;
+
+            animation-delay:
+                1.5s;
+        }
+
+
+        @keyframes characterFloat {
+
+            0% {
+                transform:
+                    translateY(0);
+            }
+
+            50% {
+                transform:
+                    translateY(-12px);
+            }
+
+            100% {
+                transform:
+                    translateY(0);
+            }
+        }
+
+
+        /* =====================================
+           MENSAJES
+           ===================================== */
+
+        #message {
+
+            position: absolute;
+
+            top: 52%;
+
+            left: 50%;
+
+            transform:
+                translate(-50%,-50%)
+                scale(.5);
+
+            font-size: 58px;
+
+            font-weight: bold;
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            z-index: 100;
+
+            transition: .35s;
+        }
+
+
+        #message.show {
+
+            opacity: 1;
+
+            transform:
+                translate(-50%,-50%)
+                scale(1.15);
+        }
+
+
+        /* =====================================
+           PANTALLA DE INICIO
+           ===================================== */
+
+        .start {
+
+            position: absolute;
+
+            inset: 0;
+
+            z-index: 200;
+
+            display: flex;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    .7
+                );
+
+            backdrop-filter:
+                blur(14px);
+
+            text-align: center;
+        }
+
+
+        .start h1 {
+
+            font-size: 52px;
+
+            margin: 0 0 10px;
+
+            color: #555;
+        }
+
+
+        .start p {
+
+            color: #777;
+
+            font-size: 18px;
+
+            margin-bottom: 30px;
+        }
+
+
+        .start button {
+
+            border: none;
+
+            padding:
+                16px 48px;
+
+            border-radius: 30px;
+
+            background: #c9eadb;
+
+            color: #555;
+
+            font-size: 20px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 22px
+                rgba(0,0,0,.1);
+
+            transition: .2s;
+        }
+
+
+        .start button:hover {
+
+            transform:
+                scale(1.08);
+        }
+
+
+        /* =====================================
+           PANTALLA GAME OVER
+           ===================================== */
+
+        .game-over {
+
+            position: absolute;
+
+            inset: 0;
+
+            z-index: 150;
+
+            display: none;
+
+            flex-direction: column;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                rgba(
+                    255,
+                    255,
+                    255,
+                    .75
+                );
+
+            backdrop-filter:
+                blur(15px);
+
+            text-align: center;
+        }
+
+
+        .game-over h2 {
+
+            font-size: 48px;
+
+            margin: 0 0 10px;
+
+            color: #555;
+        }
+
+
+        .game-over p {
+
+            font-size: 20px;
+
+            color: #777;
+        }
+
+
+        .final-score {
+
+            font-size: 65px;
+
+            font-weight: bold;
+
+            color: #7d9c8e;
+
+            margin: 20px;
+        }
+
+
+        .restart {
+
+            border: none;
+
+            padding:
+                15px 42px;
+
+            border-radius: 30px;
+
+            background:
+                #d6e8ff;
+
+            color: #555;
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            cursor: pointer;
+        }
+
+
+        /* =====================================
+           CONFETI
+           ===================================== */
+
+        .confetti {
+
+            position: fixed;
+
+            width: 10px;
+
+            height: 18px;
+
+            top: -30px;
+
+            z-index: 500;
+
+            pointer-events: none;
+
+            animation:
+                confettiFall
+                linear
+                forwards;
+        }
+
+
+        @keyframes confettiFall {
+
+            0% {
+
+                transform:
+                    translateY(0)
+                    rotate(0deg);
+
+                opacity: 1;
+            }
+
+            100% {
+
+                transform:
+                    translateY(110vh)
+                    rotate(720deg);
+
+                opacity: 0;
+            }
+        }
+
+
+        /* =====================================
+           CELEBRACIÓN
+           ===================================== */
+
+        .celebration {
+
+            position: absolute;
+
+            top: 48%;
+
+            left: 50%;
+
+            transform:
+                translate(-50%,-50%)
+                scale(.4);
+
+            z-index: 300;
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            text-align: center;
+
+            transition: .4s;
+        }
+
+
+        .celebration.show {
+
+            opacity: 1;
+
+            transform:
+                translate(-50%,-50%)
+                scale(1);
+        }
+
+
+        .celebration .emoji {
+
+            font-size: 75px;
+        }
+
+
+        .celebration h2 {
+
+            margin: 5px 0;
+
+            font-size: 40px;
+
+            color: #555;
+        }
+
+
+        .celebration p {
+
+            font-size: 20px;
+
+            color: #777;
+        }
+
+
+        /* =====================================
+           RESPONSIVE
+           ===================================== */
+
+        @media(max-width:700px) {
+
+            .title {
+
+                font-size: 18px;
+            }
+
+
+            .stat {
+
+                padding:
+                    7px 10px;
+
+                font-size: 13px;
+            }
+
+
+            .controls {
+
+                top: 70px;
+
+                width: 95%;
+            }
+
+
+            .lives {
+
+                top: 120px;
+            }
+
+
+            .speech-area {
+
+                top: 160px;
+            }
+
+
+            .timer-area {
+
+                top: 310px;
+            }
+
+
+            .bubble {
+
+                min-width: 100px;
+
+                min-height: 60px;
+
+                padding:
+                    10px 16px;
+
+                font-size: 15px;
+            }
+
+
+            .character {
+
+                width: 80px;
+
+                height: 80px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="game">
+
+
+    <!-- =================================
+         INICIO
+         ================================= -->
+
+    <div
+        class="start"
+        id="start">
+
+        <h1>
+            🎈 Palabras
+        </h1>
+
+        <p>
+            Escucha la palabra y encuentra
+            la burbuja correcta.
+        </p>
+
+        <button
+            onclick="startGame()">
+
+            ▶ Comenzar
+
+        </button>
+
+    </div>
+
+
+    <!-- =================================
+         PANEL SUPERIOR
+         ================================= -->
+
+    <div class="top">
+
+        <div class="title">
+
+            🎈 Juego de palabras
+
+        </div>
+
+
+        <div class="stats">
+
+            <div class="stat">
+
+                ⭐
+                <span id="score">
+                    0
+                </span>
+
+            </div>
+
+
+            <div class="stat">
+
+                🔥
+                <span id="streak">
+                    0
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================
+         CONTROLES
+         ================================= -->
+
+    <div class="controls">
+
+
+        <select
+            class="control"
+            id="language">
+
+            <option value="es">
+                🇲🇽 Español
+            </option>
+
+            <option value="en">
+                🇺🇸 English
+            </option>
+   <option value="fr">
+                FR Frances
+            </option>
+        </select>
+
+
+        <select
+            class="control"
+            id="speed">
+
+            <option value="0.5">
+                🐢 Muy lento
+            </option>
+
+            <option value="0.7">
+                🐌 Lento
+            </option>
+
+            <option
+                value="0.85"
+                selected>
+
+                ▶ Normal
+
+            </option>
+
+            <option value="1">
+                ⚡ Rápido
+            </option>
+
+            <option value="1.25">
+                🚀 Muy rápido
+            </option>
+
+        </select>
+
+
+        <select
+            class="control"
+            id="voice">
+
+            <option value="">
+                🔊 Voz automática
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- =================================
+         VIDAS
+         ================================= -->
+
+    <div
+        class="lives"
+        id="lives">
+
+        ❤️ ❤️ ❤️
+
+    </div>
+
+
+    <!-- =================================
+         SPEECH
+         ================================= -->
+
+    <div class="speech-area">
+
+        <div class="speech">
+
+            🎙️
+
+            <span id="speechText">
+                Escucha...
+            </span>
+
+        </div>
+
+
+        <button
+            class="speaker"
+            onclick="speakWord()">
+
+            🔊
+
+        </button>
+
+    </div>
+
+
+    <!-- =================================
+         TIMER
+         ================================= -->
+
+    <div class="timer-area">
+
+        <div class="timer">
+
+            ⏱️
+
+            <span id="timer">
+                10
+            </span>
+
+        </div>
+
+
+        <div class="timer-bar">
+
+            <div
+                class="timer-progress"
+                id="timerProgress">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =================================
+         BURBUJAS
+         ================================= -->
+
+    <div id="bubbles"></div>
+
+
+    <!-- =================================
+         PERSONAJES
+         ================================= -->
+
+    <img
+        class="character left"
+        src="imagenes/personaje1.png"
+        onerror="this.style.display='none'">
+
+
+    <img
+        class="character right"
+        src="imagenes/personajes3.png"
+        onerror="this.style.display='none'">
+
+
+    <!-- =================================
+         MENSAJE
+         ================================= -->
+
+    <div id="message">
+        +10 ⭐
+    </div>
+
+
+    <!-- =================================
+         CELEBRACIÓN
+         ================================= -->
+
+    <div
+        class="celebration"
+        id="celebration">
+
+        <div class="emoji">
+            🎉🎊✨
+        </div>
+
+        <h2>
+            ¡MUY BIEN!
+        </h2>
+
+        <p id="celebrationText">
+            ¡Excelente racha!
+        </p>
+
+    </div>
+
+
+    <!-- =================================
+         GAME OVER
+         ================================= -->
+
+    <div
+        class="game-over"
+        id="gameOver">
+
+        <h2>
+            😢 ¡Juego terminado!
+        </h2>
+
+        <p id="gameOverReason">
+            Has cometido 3 errores.
+        </p>
+
+        <div class="final-score">
+
+            ⭐
+            <span id="finalScore">
+                0
+            </span>
+
+        </div>
+
+        <button
+            class="restart"
+            onclick="restartGame()">
+
+            🔄 Comenzar nuevamente
+
+        </button>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+    /* ==========================================
+       CONFIGURACIÓN
+       ========================================== */
+
+    const TIEMPO =
+        10;
+
+    const PUNTOS =
+        10;
+
+    const MAX_ERRORES =
+        3;
+
+    const NUMERO_BURBUJAS =
+        6;
+
+    const SEPARACION =
+        25;
+
+
+    /* ==========================================
+       VARIABLES
+       ========================================== */
+
+    let palabras = [];
+
+    let palabraActual = null;
+
+    let idioma = "es";
+
+    let score = 0;
+
+    let streak = 0;
+
+    let errores = 0;
+
+    let tiempo = TIEMPO;
+
+    let timer = null;
+
+    let activo = false;
+
+    let voces = [];
+
+    let vozSeleccionada = null;
+
+    let speechReady = false;
+
+    let speechCycleTimer = null;
+
+    let speechPreviewTimer = null;
+
+
+    /* ==========================================
+       ELEMENTOS
+       ========================================== */
+
+    const bubbles =
+        document.getElementById(
+            "bubbles"
+        );
+
+
+    const scoreElement =
+        document.getElementById(
+            "score"
+        );
+
+
+    const streakElement =
+        document.getElementById(
+            "streak"
+        );
+
+
+    const timerElement =
+        document.getElementById(
+            "timer"
+        );
+
+
+    const timerProgress =
+        document.getElementById(
+            "timerProgress"
+        );
+
+
+    const speechText =
+        document.getElementById(
+            "speechText"
+        );
+
+
+    const lives =
+        document.getElementById(
+            "lives"
+        );
+
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    const voiceSelect =
+        document.getElementById(
+            "voice"
+        );
+
+
+    const speedSelect =
+        document.getElementById(
+            "speed"
+        );
+
+
+    /* ==========================================
+       CARGAR PALABRAS
+       ========================================== */
+
+    async function loadWords() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "palabras.json"
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "No se pudo cargar palabras.json"
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            palabras =
+                data.palabras;
+
+
+        }
+        catch(error) {
+
+            console.error(error);
+
+            alert(
+                "No se pudo cargar palabras.json"
+            );
+
+        }
+
+    }
+
+
+    /* ==========================================
+       VOCES
+       ========================================== */
+
+    function loadVoices() {
+
+        if (
+            !("speechSynthesis" in window)
+        ) {
+
+            return;
+
+        }
+
+
+        voces =
+            speechSynthesis.getVoices();
+
+        speechReady =
+            voces.length > 0;
+
+
+        updateVoiceList();
+
+    }
+
+
+    function stopSpeechLoop() {
+
+        if (
+            speechCycleTimer
+        ) {
+
+            clearInterval(speechCycleTimer);
+
+            speechCycleTimer = null;
+
+        }
+
+    }
+
+
+    function showSpeechPreview(text, duration = 1200) {
+
+        if (
+            !speechText
+        ) {
+
+            return;
+
+        }
+
+
+        speechText.textContent = text;
+        speechText.style.opacity = "1";
+        speechText.style.transform = "scale(1.05)";
+
+
+        if (
+            speechPreviewTimer
+        ) {
+
+            clearTimeout(speechPreviewTimer);
+
+        }
+
+
+        speechPreviewTimer = setTimeout(
+            () => {
+
+                if (
+                    activo
+                ) {
+
+                    speechText.style.opacity = "0";
+                    speechText.style.transform = "scale(.92)";
+
+                    setTimeout(
+                        () => {
+
+                            speechText.textContent = "Escucha...";
+                            speechText.style.opacity = "1";
+                            speechText.style.transform = "scale(1)";
+
+                        },
+                        180
+                    );
+
+                }
+
+            },
+            duration
+        );
+
+    }
+
+
+    function speakWhenReady(callback) {
+
+        if (
+            !("speechSynthesis" in window)
+        ) {
+
+            return;
+
+        }
+
+
+        const intentar =
+            (intento = 0) => {
+
+                const listaActual =
+                    speechSynthesis.getVoices();
+
+
+                if (
+                    listaActual.length > 0
+                ) {
+
+                    voces = listaActual;
+
+                    speechReady = true;
+
+                    updateVoiceList();
+
+                    callback();
+
+                    return;
+
+                }
+
+
+                if (
+                    intento < 20
+                ) {
+
+                    setTimeout(
+                        () => intentar(intento + 1),
+                        180
+                    );
+
+                    return;
+
+                }
+
+
+                speechReady = false;
+
+                callback();
+
+            };
+
+
+        intentar();
+
+    }
+
+
+    function speakWordWithRetry() {
+
+        stopSpeechLoop();
+
+        if (
+            !palabraActual
+        ) {
+
+            return;
+
+        }
+
+
+        let intentos = 0;
+
+
+        const trySpeak = () => {
+
+            if (
+                !("speechSynthesis" in window)
+            ) {
+
+                return;
+
+            }
+
+
+            const listaActual =
+                speechSynthesis.getVoices();
+
+
+            if (
+                listaActual.length > 0
+            ) {
+
+                voces = listaActual;
+
+                speechReady = true;
+
+                updateVoiceList();
+
+                speakWord();
+
+                return;
+
+            }
+
+
+            intentos++;
+
+
+            if (
+                intentos <= 18
+            ) {
+
+                speechCycleTimer = setInterval(
+                    () => {
+
+                        if (
+                            palabraActual
+                        ) {
+
+                            speechSynthesis.cancel();
+
+                            const loopUtterance =
+                                new SpeechSynthesisUtterance(
+                                    palabraActual[idioma]
+                                );
+
+                            loopUtterance.lang =
+                                idioma === "es" ? "es-MX" :
+                                idioma === "en" ? "en-US" : "fr-FR";
+
+                            loopUtterance.rate =
+                                parseFloat(
+                                    speedSelect.value
+                                );
+
+                            loopUtterance.pitch = 1;
+                            loopUtterance.volume = 1;
+
+                            speechSynthesis.speak(
+                                loopUtterance
+                            );
+
+                        }
+
+                    },
+                    350
+                );
+
+                setTimeout(
+                    () => {
+
+                        stopSpeechLoop();
+
+                        if (
+                            speechSynthesis.getVoices().length > 0
+                        ) {
+
+                            speakWord();
+
+                        }
+
+                    },
+                    1800
+                );
+
+                return;
+
+            }
+
+
+            speechReady = false;
+
+            speakWord();
+
+        };
+
+
+        trySpeak();
+
+    }
+
+
+    function updateVoiceList() {
+
+        voiceSelect.innerHTML = "";
+
+
+        const automatic =
+            document.createElement(
+                "option"
+            );
+
+
+        automatic.value = "";
+
+        automatic.textContent =
+            "🔊 Voz automática";
+
+
+        voiceSelect.appendChild(
+            automatic
+        );
+
+
+        const filtered =
+            voces.filter(
+                voice =>
+                    voice.lang
+                        .toLowerCase()
+                        .startsWith(
+                            idioma
+                        )
+            );
+
+
+        filtered.forEach(
+            (voice, index) => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    index;
+
+
+                option.textContent =
+                    "🔊 " +
+                    voice.name;
+
+
+                voiceSelect.appendChild(
+                    option
+                );
+
+            }
+        );
+
+    }
+
+
+    if (
+        "speechSynthesis" in window
+    ) {
+
+        speechSynthesis.onvoiceschanged =
+            loadVoices;
+
+        loadVoices();
+
+    }
+
+
+    /* ==========================================
+       ACTUALIZAR VIDAS
+       ========================================== */
+
+    function updateLives() {
+
+        let html = "";
+
+
+        for (
+            let i = 0;
+            i < MAX_ERRORES;
+            i++
+        ) {
+
+            if (
+                i < MAX_ERRORES - errores
+            ) {
+
+                html += "❤️ ";
+
+            }
+            else {
+
+                html += "🖤 ";
+
+            }
+
+        }
+
+
+        lives.innerHTML =
+            html;
+
+    }
+
+
+    /* ==========================================
+       INICIAR JUEGO
+       ========================================== */
+
+    async function startGame() {
+
+        if (
+            palabras.length === 0
+        ) {
+
+            await loadWords();
+
+        }
+
+
+        if (
+            palabras.length === 0
+        ) {
+
+            return;
+
+        }
+
+
+        document
+            .getElementById("start")
+            .style.display =
+            "none";
+
+
+        document
+            .getElementById("gameOver")
+            .style.display =
+            "none";
+
+
+        score = 0;
+
+        streak = 0;
+
+        errores = 0;
+
+
+        scoreElement.textContent =
+            score;
+
+
+        streakElement.textContent =
+            streak;
+
+
+        updateLives();
+
+
+        activo = true;
+
+
+        nextRound();
+
+    }
+
+
+    /* ==========================================
+       SIGUIENTE RONDA
+       ========================================== */
+
+    function nextRound() {
+
+        if (!activo) {
+
+            return;
+
+        }
+
+
+        clearInterval(timer);
+
+
+        bubbles.innerHTML = "";
+
+
+        tiempo = TIEMPO;
+
+
+        updateTimer();
+
+
+        palabraActual =
+            palabras[
+                Math.floor(
+                    Math.random() *
+                    palabras.length
+                )
+            ];
+
+
+        showSpeechPreview(
+            palabraActual[idioma],
+            1800
+        );
+
+
+        createBubbles();
+
+
+        setTimeout(
+            () => {
+
+                speakWordWithRetry();
+
+            },
+            180
+        );
+
+
+        timer =
+            setInterval(
+                () => {
+
+                    tiempo--;
+
+                    updateTimer();
+
+
+                    if (
+                        tiempo <= 0
+                    ) {
+
+                        clearInterval(timer);
+
+                        loseByTime();
+
+                    }
+
+                },
+                1000
+            );
+
+    }
+
+
+    /* ==========================================
+       CREAR BURBUJAS
+       ========================================== */
+
+    function createBubbles() {
+
+        let options = [];
+
+
+        options.push(
+            palabraActual
+        );
+
+
+        let others =
+            palabras.filter(
+                word =>
+                    word.es !==
+                    palabraActual.es
+            );
+
+
+        others =
+            others.sort(
+                () =>
+                    Math.random() - .5
+            );
+
+
+        options.push(
+            ...others.slice(
+                0,
+                NUMERO_BURBUJAS - 1
+            )
+        );
+
+
+        options =
+            options.sort(
+                () =>
+                    Math.random() - .5
+            );
+
+
+        const positions = [];
+
+
+        options.forEach(
+            (word, index) => {
+
+                createBubble(
+                    word,
+                    index,
+                    positions
+                );
+
+            }
+        );
+
+    }
+
+
+    /* ==========================================
+       COLISIÓN
+       ========================================== */
+
+    function overlap(
+        x,
+        y,
+        width,
+        height,
+        positions
+    ) {
+
+        for (
+            const p of positions
+        ) {
+
+            const horizontal =
+                x <
+                p.x +
+                p.width +
+                SEPARACION
+                &&
+                x +
+                width +
+                SEPARACION >
+                p.x;
+
+
+            const vertical =
+                y <
+                p.y +
+                p.height +
+                SEPARACION
+                &&
+                y +
+                height +
+                SEPARACION >
+                p.y;
+
+
+            if (
+                horizontal &&
+                vertical
+            ) {
+
+                return true;
+
+            }
+
+        }
+
+
+        return false;
+
+    }
+
+
+    /* ==========================================
+       POSICIÓN LIBRE
+       ========================================== */
+
+    function getFreePosition(
+        width,
+        height,
+        positions
+    ) {
+
+        const screenWidth =
+            window.innerWidth;
+
+
+        const screenHeight =
+            window.innerHeight;
+
+
+        const minY =
+            370;
+
+
+        const maxX =
+            screenWidth -
+            width -
+            20;
+
+
+        const maxY =
+            screenHeight -
+            height -
+            20;
+
+
+        for (
+            let i = 0;
+            i < 300;
+            i++
+        ) {
+
+            const x =
+                20 +
+                Math.random() *
+                Math.max(
+                    1,
+                    maxX - 20
+                );
+
+
+            const y =
+                minY +
+                Math.random() *
+                Math.max(
+                    1,
+                    maxY - minY
+                );
+
+
+            if (
+                !overlap(
+                    x,
+                    y,
+                    width,
+                    height,
+                    positions
+                )
+            ) {
+
+                return {
+                    x,
+                    y
+                };
+
+            }
+
+        }
+
+
+        return {
+            x: 20,
+            y: minY
+        };
+
+    }
+
+
+    /* ==========================================
+       CREAR BURBUJA
+       ========================================== */
+
+    function createBubble(
+        word,
+        index,
+        positions
+    ) {
+
+        const bubble =
+            document.createElement(
+                "div"
+            );
+
+
+        bubble.className =
+            "bubble pastel" +
+            ((index % 6) + 1);
+
+
+        bubble.textContent =
+            word[idioma];
+
+
+        bubble.style.visibility =
+            "hidden";
+
+
+        bubbles.appendChild(
+            bubble
+        );
+
+
+        const rect =
+            bubble.getBoundingClientRect();
+
+
+        const position =
+            getFreePosition(
+                rect.width,
+                rect.height,
+                positions
+            );
+
+
+        positions.push({
+
+            x: position.x,
+
+            y: position.y,
+
+            width: rect.width,
+
+            height: rect.height
+
+        });
+
+
+        bubble.style.left =
+            position.x + "px";
+
+
+        bubble.style.top =
+            position.y + "px";
+
+
+        bubble.style.visibility =
+            "visible";
+
+
+        bubble.style.animationDuration =
+            (
+                3 +
+                Math.random() * 3
+            ) + "s";
+
+
+        bubble.onclick =
+            () => {
+
+                selectWord(
+                    word,
+                    bubble
+                );
+
+            };
+
+    }
+
+
+    /* ==========================================
+       SELECCIONAR
+       ========================================== */
+
+    function selectWord(
+        word,
+        bubble
+    ) {
+
+        if (!activo) {
+
+            return;
+
+        }
+
+
+        clearInterval(timer);
+
+
+        /* =================================
+           CORRECTA
+           ================================= */
+
+        if (
+            word.es ===
+            palabraActual.es
+        ) {
+
+            score += PUNTOS;
+
+            streak++;
+
+
+            scoreElement.textContent =
+                score;
+
+
+            streakElement.textContent =
+                streak;
+
+
+            bubble.style.transform =
+                "scale(1.5)";
+
+
+            bubble.style.opacity =
+                "0";
+
+
+            showMessage(
+                "+10 ⭐",
+                "#7d9c8e"
+            );
+
+
+            /*
+             * Celebración
+             */
+
+            if (
+                streak === 5 ||
+                streak === 10 ||
+                streak === 15 ||
+                streak % 10 === 0
+            ) {
+
+                celebrate();
+
+            }
+
+
+            setTimeout(
+                nextRound,
+                600
+            );
+
+        }
+
+
+        /* =================================
+           INCORRECTA
+           ================================= */
+
+        else {
+
+            errores++;
+
+            streak = 0;
+
+
+            streakElement.textContent =
+                streak;
+
+
+            updateLives();
+
+
+            bubble.style.transform =
+                "scale(.5)";
+
+
+            bubble.style.opacity =
+                "0";
+
+
+            showMessage(
+                "❌",
+                "#d99a9a"
+            );
+
+
+            /*
+             * 3 errores
+             */
+
+            if (
+                errores >= MAX_ERRORES
+            ) {
+
+                setTimeout(
+                    () => {
+
+                        gameOver(
+                            "Has cometido 3 errores."
+                        );
+
+                    },
+                    500
+                );
+
+                return;
+
+            }
+
+
+            setTimeout(
+                nextRound,
+                650
+            );
+
+        }
+
+    }
+
+
+    /* ==========================================
+       TIEMPO AGOTADO
+       ========================================== */
+
+    function loseByTime() {
+
+        if (!activo) {
+
+            return;
+
+        }
+
+
+        showMessage(
+            "⏱️",
+            "#d5b57a"
+        );
+
+
+        setTimeout(
+            () => {
+
+                gameOver(
+                    "Se acabó el tiempo."
+                );
+
+            },
+            500
+        );
+
+    }
+
+
+    /* ==========================================
+       GAME OVER
+       ========================================== */
+
+    function gameOver(
+        reason
+    ) {
+
+        activo = false;
+
+
+        clearInterval(timer);
+
+
+        if (
+            "speechSynthesis" in window
+        ) {
+
+            speechSynthesis.cancel();
+
+        }
+
+
+        bubbles.innerHTML = "";
+
+
+        document
+            .getElementById(
+                "gameOverReason"
+            )
+            .textContent =
+            reason;
+
+
+        document
+            .getElementById(
+                "finalScore"
+            )
+            .textContent =
+            score;
+
+
+        document
+            .getElementById(
+                "gameOver"
+            )
+            .style.display =
+            "flex";
+
+    }
+
+
+    /* ==========================================
+       TIMER
+       ========================================== */
+
+    function updateTimer() {
+
+        timerElement.textContent =
+            tiempo;
+
+
+        const percentage =
+            (
+                tiempo /
+                TIEMPO
+            ) * 100;
+
+
+        timerProgress.style.width =
+            percentage + "%";
+
+
+        /*
+         * Cuando quedan pocos segundos
+         * cambiamos ligeramente el aspecto.
+         */
+
+        if (
+            tiempo <= 3
+        ) {
+
+            timerProgress.style.background =
+                "#f1b8b8";
+
+        }
+        else {
+
+            timerProgress.style.background =
+                "#b9e7d3";
+
+        }
+
+    }
+
+
+    /* ==========================================
+       MENSAJE
+       ========================================== */
+
+    function showMessage(
+        text,
+        color
+    ) {
+
+        message.textContent =
+            text;
+
+
+        message.style.color =
+            color;
+
+
+        message.classList.add(
+            "show"
+        );
+
+
+        setTimeout(
+            () => {
+
+                message.classList.remove(
+                    "show"
+                );
+
+            },
+            550
+        );
+
+    }
+
+
+    /* ==========================================
+       CELEBRACIÓN
+       ========================================== */
+
+    function celebrate() {
+
+        const celebration =
+            document.getElementById(
+                "celebration"
+            );
+
+
+        const text =
+            document.getElementById(
+                "celebrationText"
+            );
+
+
+        text.textContent =
+            "🔥 " +
+            streak +
+            " respuestas seguidas";
+
+
+        celebration.classList.add(
+            "show"
+        );
+
+
+        createConfetti(
+            100
+        );
+
+
+        /*
+         * Ocultar después
+         */
+
+        setTimeout(
+            () => {
+
+                celebration.classList.remove(
+                    "show"
+                );
+
+            },
+            1800
+        );
+
+    }
+
+
+    /* ==========================================
+       CONFETI
+       ========================================== */
+
+    function createConfetti(
+        amount
+    ) {
+
+        const colors = [
+
+            "#ffd6e7",
+
+            "#d6e8ff",
+
+            "#d9f7e8",
+
+            "#fff0c9",
+
+            "#e7d9ff",
+
+            "#ffd9c9"
+
+        ];
+
+
+        for (
+            let i = 0;
+            i < amount;
+            i++
+        ) {
+
+            const piece =
+                document.createElement(
+                    "div"
+                );
+
+
+            piece.className =
+                "confetti";
+
+
+            piece.style.left =
+                Math.random() *
+                100 +
+                "vw";
+
+
+            piece.style.background =
+                colors[
+                    Math.floor(
+                        Math.random() *
+                        colors.length
+                    )
+                ];
+
+
+            piece.style.animationDuration =
+                (
+                    2 +
+                    Math.random() * 3
+                ) + "s";
+
+
+            piece.style.animationDelay =
+                (
+                    Math.random() *
+                    .8
+                ) + "s";
+
+
+            piece.style.transform =
+                "rotate(" +
+                Math.random() *
+                360 +
+                "deg)";
+
+
+            document.body.appendChild(
+                piece
+            );
+
+
+            setTimeout(
+                () => {
+
+                    piece.remove();
+
+                },
+                5000
+            );
+
+        }
+
+    }
+
+
+    /* ==========================================
+       VOZ
+       ========================================== */
+
+    function speakWord() {
+
+        if (
+            !palabraActual
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            !("speechSynthesis" in window)
+        ) {
+
+            return;
+
+        }
+
+
+        stopSpeechLoop();
+        speechSynthesis.cancel();
+
+        showSpeechPreview(
+            palabraActual[idioma],
+            1800
+        );
+
+
+        const utterance =
+            new SpeechSynthesisUtterance(
+                palabraActual[idioma]
+            );
+
+
+        switch (idioma) {
+
+            case "es":
+                utterance.lang = "es-MX";
+                break;
+
+            case "en":
+                utterance.lang = "en-US";
+                break;
+
+            case "fr":
+                utterance.lang = "fr-FR";
+                break;
+
+            default:
+                utterance.lang = "es-MX";
+                break;
+
+        }
+
+
+        utterance.rate =
+            parseFloat(
+                speedSelect.value
+            );
+
+
+        utterance.pitch =
+            1;
+
+
+        utterance.volume =
+            1;
+
+
+        const vocesIdioma =
+            voces.filter(
+                voice =>
+                    voice.lang
+                        .toLowerCase()
+                        .startsWith(
+                            idioma
+                        )
+            );
+
+
+        if (
+            voiceSelect.value !== ""
+        ) {
+
+            const selected =
+                vocesIdioma[
+                    Number(
+                        voiceSelect.value
+                    )
+                ];
+
+            if (
+                selected
+            ) {
+
+                utterance.voice =
+                    selected;
+
+            }
+
+        }
+
+
+        speechSynthesis.speak(
+            utterance
+        );
+
+    }
+
+
+    /* ==========================================
+       CAMBIO DE IDIOMA
+       ========================================== */
+
+    document
+        .getElementById("language")
+        .addEventListener(
+            "change",
+            function () {
+
+                idioma =
+                    this.value;
+
+
+                vozSeleccionada =
+                    null;
+
+
+                updateVoiceList();
+
+
+                if (activo) {
+
+                    nextRound();
+
+                }
+
+            }
+        );
+
+
+    /* ==========================================
+       CAMBIO DE VOZ
+       ========================================== */
+
+    voiceSelect.addEventListener(
+        "change",
+        function () {
+
+            if (
+                palabraActual
+            ) {
+
+                speakWord();
+
+            }
+
+        }
+    );
+
+
+    /* ==========================================
+       CAMBIO DE VELOCIDAD
+       ========================================== */
+
+    speedSelect.addEventListener(
+        "change",
+        function () {
+
+            if (
+                palabraActual
+            ) {
+
+                speakWord();
+
+            }
+
+        }
+    );
+
+
+    /* ==========================================
+       REINICIAR
+       ========================================== */
+
+    function restartGame() {
+
+        document
+            .getElementById(
+                "gameOver"
+            )
+            .style.display =
+            "none";
+
+
+        score = 0;
+
+        streak = 0;
+
+        errores = 0;
+
+
+        scoreElement.textContent =
+            score;
+
+
+        streakElement.textContent =
+            streak;
+
+
+        updateLives();
+
+
+        activo = true;
+
+
+        nextRound();
+
+    }
+
+
+    /* ==========================================
+       CARGAR AL ABRIR
+       ========================================== */
+
+    loadWords();
+
+    if (
+        "speechSynthesis" in window
+    ) {
+
+        setTimeout(
+            () => loadVoices(),
+            150
+        );
+
+    }
+
+</script>
+
+
+</body>
+
+</html>
